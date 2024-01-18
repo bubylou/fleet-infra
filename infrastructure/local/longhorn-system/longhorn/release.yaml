@@ -1,0 +1,33 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: longhorn
+spec:
+  releaseName: longhorn
+  chart:
+    spec:
+      chart: longhorn
+      sourceRef:
+        kind: HelmRepository
+        name: longhorn
+  interval: 60m
+  values:
+    defaultSettings:
+      backupTarget: nfs://nas01.bubylou.com:/srv/backup
+      backupTargetCredentialSecret:
+      createDefaultDiskLabeledNodes: false
+      defaultDataPath: /mnt/ssd/longhorn
+      replicaSoftAntiAffinity: false
+      storageOverProvisioningPercentage: 600
+      storageMinimalAvailablePercentage: 15
+      upgradeChecker: false
+      defaultReplicaCount: 2
+      defaultLonghornStaticStorageClass: longhorn-mirror-ssd
+      backupstorePollInterval: 500
+      taintToleration: key1=value1:NoSchedule; key2:NoExecute
+    ingress:
+      enabled: true
+      host: longhorn.bubylou.com
+      tls: true
+      tlsSecret: wildcard-bubylou-com
+      path: /
