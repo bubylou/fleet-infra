@@ -29,5 +29,5 @@ spec:
       enabled: true
       host: longhorn.bubylou.com
       tls: true
-      tlsSecret: wildcard-bubylou-com
+      tlsSecret: longhorn-bubylou-tls
       path: /
