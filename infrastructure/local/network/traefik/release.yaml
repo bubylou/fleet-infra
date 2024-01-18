@@ -1,0 +1,56 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: traefik
+spec:
+  releaseName: traefik
+  chart:
+    spec:
+      chart: traefik
+      sourceRef:
+        kind: HelmRepository
+        name: traefik
+  interval: 60m
+  values:
+    image:
+      registry: docker.io
+      repository: traefik
+      tag: "v2.11"
+      pullPolicy: IfNotPresent
+
+    deployment:
+      enabled: true
+      kind: Deployment
+      replicas: 1
+
+    ingressClass:
+      enabled: true
+      isDefaultClass: true
+
+    ingressRoute:
+      dashboard:
+        enabled: true
+        annotations:
+          traefik.ingress.kubernetes.io/router.middlewares: "sso-authelia@kubernetescrd"
+        matchRule: PathPrefix(`/dashboard`) || PathPrefix(`/api`)
+      healthcheck:
+        enabled: false
+        matchRule: PathPrefix(`/ping`)
+
+    updateStrategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+
+
+    metrics:
+      prometheus:
+        entryPoint: metrics
+
+    service:
+      enabled: true
+      single: true
+      type: LoadBalancer
+      annotations:
+        metallb.universe.tf/loadBalancerIPs: 192.168.1.90
