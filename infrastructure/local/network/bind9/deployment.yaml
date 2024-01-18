@@ -1,0 +1,58 @@
+# yaml-language-server: kubernetes
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bind9
+  labels:
+    app: bind9
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bind9
+  template:
+    metadata:
+      labels:
+        app: bind9
+    spec:
+      hostNetwork: true
+      restartPolicy: Always
+      containers:
+        - name: bind9
+          image: ubuntu/bind9:9.18-23.04_edge
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: America/New_York
+          ports:
+            - containerPort: 53
+              name: dns-tcp
+              protocol: TCP
+            - containerPort: 53
+              name: dns-udp
+              protocol: UDP
+          readinessProbe:
+            tcpSocket:
+              port: dns-tcp
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: dns-udp
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /etc/bind
+              name: bind9
+              readOnly: false
+      volumes:
+        - name: bind9
+          configMap:
+            name: bind9
+            items:
+              - key: named.conf
+                path: named.conf
+              - key: bubylou-com.zone
+                path: bubylou-com.zone
+

@@ -1,0 +1,54 @@
+# https://kubernetes.io/docs/concepts/configuration/configmap/
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bind9
+data:
+  named.conf: |
+    acl internal {
+      10.42.0.0/16;
+      10.43.0.0/16;
+      192.168.1.0/24;
+      192.168.2.0/24;
+    };
+    options {
+      directory "/var/cache/bind";
+      listen-on port 53 { any; };
+      auth-nxdomain yes;
+      forwarders {
+        1.1.1.1;
+        1.0.0.1;
+      };
+      allow-query { internal; };
+      listen-on-v6 { ::1; };
+    };
+    zone "bubylou.com" IN {
+      type master;
+      file "/etc/bind/bubylou-com.zone";
+    };
+
+  bubylou-com.zone: |
+    $TTL 86400	; 1 day
+    @       IN      SOA     ns.bubylou.com. admin.bubylou.com. (
+                         2024010400         ; serial (date)
+                               3600         ; refresh (1 hour)
+                               3600         ; retry (1 hour)
+                            2419200         ; expire (4 weeks)
+                               3600 )       ; minimum (1 hour)
+    ;
+    bubylou.com.             IN      NS      192.168.1.90
+    *                        IN      A       192.168.1.90
+    ns                       IN      A       192.168.1.91
+    nas01                    IN      A       192.168.1.11
+    nas02                    IN      A       192.168.1.12
+    renegade01               IN      A       192.168.1.21
+    renegade02               IN      A       192.168.1.22
+    renegade03               IN      A       192.168.1.23
+    renegade04               IN      A       192.168.1.24
+    renegade05               IN      A       192.168.1.25
+    orangepi01               IN      A       192.168.1.31
+    orangepi02               IN      A       192.168.1.32
+    orangepi03               IN      A       192.168.1.33
+    orangepi04               IN      A       192.168.1.34
+    orangepi05               IN      A       192.168.1.35
