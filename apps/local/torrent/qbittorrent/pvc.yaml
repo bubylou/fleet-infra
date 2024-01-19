@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: qbittorrent-pvc
+  labels:
+    app: qbittorrent
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-single-ssd
+  resources:
+    requests:
+      storage: 5Gi
