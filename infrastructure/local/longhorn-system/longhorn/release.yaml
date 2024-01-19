@@ -32,4 +32,5 @@ spec:
       tlsSecret: longhorn-bubylou-tls
       path: /
       annotations:
+        cert-manager.io/cluster-issuer: "letsencrypt-production"
         traefik.ingress.kubernetes.io/router.middlewares: "sso-authelia@kubernetescrd"

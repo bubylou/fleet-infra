@@ -1,11 +1,9 @@
+---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: arr
 resources:
-  - namespace.yaml
-  - bazarr
-  - lidarr
-  - prowlarr
-  - radarr
-  - sonarr
-  - unpackerr
+- deployment.yaml
+- ingress.yaml
+- pvc.yaml
+- service.yaml

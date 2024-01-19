@@ -1,0 +1,58 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bazarr
+  labels:
+    app: bazarr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: bazarr
+  template:
+    metadata:
+      labels:
+        app: bazarr
+    spec:
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      containers:
+        - name: bazarr
+          image: ghcr.io/hotio/bazarr:release-1.4.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PGID
+              value: '1000'
+            - name: PUID
+              value: '1000'
+            - name: TZ
+              value: America/New_York
+          ports:
+            - name: http
+              containerPort: 6767
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 6767
+              scheme: HTTP
+          volumeMounts:
+            - mountPath: /config
+              name: bazarr-data
+            - mountPath: /data/movies
+              name: nfs-nas01
+              subPath: Movies
+            - mountPath: /data/tv
+              name: nfs-nas01
+              subPath: TV
+      volumes:
+        - name: bazarr-data
+          persistentVolumeClaim:
+            claimName: bazarr-pvc
+        - name: nfs-nas01
+          nfs:
+            server: nas01.bubylou.com
+            path: /srv/share
