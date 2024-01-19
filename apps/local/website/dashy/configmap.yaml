@@ -1,0 +1,118 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dashy-config
+  labels:
+    app: dashy
+data:
+  config: |
+    pageInfo:
+      title: Home Lab
+    appConfig:
+      layout: auto
+      iconSize: large
+      statusCheck: false
+      theme: minimal-dark
+    sections:
+    - name: Arr
+      icon: generative
+      items:
+      - title: prowlarr
+        description: Torrent indexer
+        icon: generative
+        url: https://prowlarr.bubylou.com
+      - title: lidarr
+        description: Music manager
+        icon: generative
+        url: https://lidarr.bubylou.com
+      - title: radarr
+        description: Movie manager
+        icon: generative
+        url: https://radarr.bubylou.com
+      - title: sonarr
+        description: TV manager
+        icon: generative
+        url: https://sonarr.bubylou.com
+    - name: Code
+      icon: generative
+      items:
+      - title: docker hub
+        description: Docker containers
+        icon: generative
+        url: https://hub.docker.com/
+      - title: flathub
+        description: Linux flatpaks
+        icon: generative
+        url: https://flathub.org/home
+      - title: github
+        description: Git host
+        icon: generative
+        url: https://github.com/bubylou
+    - name: Home
+      icon: generative
+      items:
+      - title: mealie
+        description: Meal planner
+        icon: generative
+        url: https://mealie.bubylou.com/
+    - name: Media
+      icon: generative
+      items:
+      - title: jellyfin
+        description: Video player
+        icon: generative
+        url: https://jellyfin.bubylou.com
+      - title: jellyseerr
+        description: Media requests
+        icon: generative
+        url: https://jellyseerr.bubylou.com
+    - name: Services
+      icon: generative
+      items:
+      - title: grafana
+        description: Monitoring graphs
+        icon: generative
+        url: https://grafana.bubylou.com
+      - title: kuma
+        description: Monitor uptime
+        icon: generative
+        url: https://kuma.bubylou.com
+      - title: longhorn
+        description: Longhorn dashboard
+        icon: generative
+        url: https://longhorn.bubylou.com
+      - title: pfsense
+        description: Router home
+        icon: generative
+        url: https://pfsense.bubylou.com:10443
+    - name: Torrent
+      icon: generative
+      items:
+      - title: animebytes
+        description: Anime private
+        icon: generative
+        url: https://animebytes.tv/
+      - title: IP Torrents
+        description: General private
+        icon: generative
+        url: https://iptorrents.com/
+      - title: qbittorrent
+        description: Torrent client
+        icon: generative
+        url: https://qbittorrent.bubylou.com/#/
+    - name: Websites
+      icon: generative
+      items:
+      - title: blog
+        description: Blog platform
+        icon: generative
+        url: https://blog.bubylou.com
+      - title: bubylou.com
+        description: Main website
+        icon: generative
+        url: https://bubylou.com
+      - title: random
+        description: Random memes
+        icon: generative
+        url: https://random.bubylou.com

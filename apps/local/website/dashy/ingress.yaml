@@ -1,0 +1,24 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dashy
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    traefik.ingress.kubernetes.io/router.middlewares: "sso-authelia@kubernetescrd"
+spec:
+  rules:
+    - host: dashy.bubylou.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dashy
+                port:
+                  number: 4000
+  tls:
+    - hosts:
+      - dashy.bubylou.com
+      secretName: dashy-bubylou-tls

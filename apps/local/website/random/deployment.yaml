@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: random
+  labels:
+    app: random
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: random
+  template:
+    metadata:
+      labels:
+        app: random
+    spec:
+      initContainers:
+        - name: copy
+          image: busybox:1.36
+          command: [ "sh", "-c", "cp /nfs/* /random" ]
+          volumeMounts:
+            - name: webm-nfs
+              mountPath: /nfs
+              readOnly: true
+            - name: webm-random
+              mountPath: /random
+              readOnly: false
+      containers:
+        - name: random
+          image: ghcr.io/bubylou/random:v0.2.3
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: GIN_MODE
+              value: release
+            - name: DIRECTORY
+              value: "/videos"
+            - name: port
+              value: "3000"
+          ports:
+            - name: random
+              containerPort: 3000
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+              scheme: HTTP
+          volumeMounts:
+            - name: webm-random
+              mountPath: /videos
+              readOnly: false
+      volumes:
+        - name: webm-nfs
+          nfs:
+            server: nas01.bubylou.com
+            path: /srv/k3s/webm
+            readOnly: true
+        - name: webm-random
+          emptyDir: {}
