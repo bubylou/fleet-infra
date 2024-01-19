@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prowlarr
+  labels:
+    app: prowlarr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: prowlarr
+  template:
+    metadata:
+      labels:
+        app: prowlarr
+    spec:
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      containers:
+        - name: prowlarr
+          image: ghcr.io/hotio/prowlarr:release-1.10.5.4116
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PGID
+              value: '1000'
+            - name: PUID
+              value: '1000'
+            - name: TZ
+              value: America/New_York
+          ports:
+            - name: http
+              containerPort: 9696
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 9696
+              scheme: HTTP
+          volumeMounts:
+            - mountPath: /config
+              name: prowlarr-data
+      volumes:
+        - name: prowlarr-data
+          persistentVolumeClaim:
+            claimName: prowlarr-pvc

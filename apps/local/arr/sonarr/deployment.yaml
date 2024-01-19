@@ -1,0 +1,69 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarr
+  labels:
+    app: sonarr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: sonarr
+  template:
+    metadata:
+      labels:
+        app: sonarr
+    spec:
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      containers:
+        - name: sonarr
+          image: ghcr.io/hotio/sonarr:release-3.0.10.1567
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PGID
+              value: '1000'
+            - name: PUID
+              value: '1000'
+            - name: TZ
+              value: America/New_York
+          ports:
+            - name: http
+              containerPort: 8989
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - curl "http://localhost:8989/api/v3/health?ApiKey=$(sed -ne '/ApiKey/{s/.*<ApiKey>\(.*\)<\/ApiKey>.*/\1/p;q;}' </config/config.xml)"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - curl "http://localhost:8989/api/v3/system/status?ApiKey=$(sed -ne '/ApiKey/{s/.*<ApiKey>\(.*\)<\/ApiKey>.*/\1/p;q;}' </config/config.xml)"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /config
+              name: sonarr-data
+            - mountPath: /data/downloads
+              name: nfs-nas01
+              subPath: Downloads
+            - mountPath: /data/tv
+              name: nfs-nas01
+              subPath: TV
+      volumes:
+        - name: sonarr-data
+          persistentVolumeClaim:
+            claimName: sonarr-pvc
+        - name: nfs-nas01
+          nfs:
+            server: nas01.bubylou.com
+            path: /srv/share

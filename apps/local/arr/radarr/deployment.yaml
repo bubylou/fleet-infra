@@ -1,0 +1,69 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radarr
+  labels:
+    app: radarr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: radarr
+  template:
+    metadata:
+      labels:
+        app: radarr
+    spec:
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      containers:
+        - name: radarr
+          image: ghcr.io/hotio/radarr:release-5.1.3.8246
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PGID
+              value: '1000'
+            - name: PUID
+              value: '1000'
+            - name: TZ
+              value: America/New_York
+          ports:
+            - name: http
+              containerPort: 7878
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - curl "http://localhost:7878/api/v3/health?ApiKey=$(sed -ne '/ApiKey/{s/.*<ApiKey>\(.*\)<\/ApiKey>.*/\1/p;q;}' </config/config.xml)"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - curl "http://localhost:7878/api/v3/system/status?ApiKey=$(sed -ne '/ApiKey/{s/.*<ApiKey>\(.*\)<\/ApiKey>.*/\1/p;q;}' </config/config.xml)"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /config
+              name: radarr-data
+            - mountPath: /data/downloads
+              name: nfs-nas01
+              subPath: Downloads
+            - mountPath: /data/movies
+              name: nfs-nas01
+              subPath: Movies
+      volumes:
+        - name: radarr-data
+          persistentVolumeClaim:
+            claimName: radarr-pvc
+        - name: nfs-nas01
+          nfs:
+            server: nas01.bubylou.com
+            path: /srv/share

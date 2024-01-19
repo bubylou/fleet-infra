@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sonarr-pvc
+  labels:
+    app: sonarr
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-mirror-ssd
+  resources:
+    requests:
+      storage: 5Gi

@@ -1,0 +1,24 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lidarr
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    traefik.ingress.kubernetes.io/router.middlewares: "sso-authelia@kubernetescrd"
+spec:
+  rules:
+    - host: lidarr.bubylou.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: lidarr
+                port:
+                  number: 8686
+  tls:
+    - hosts:
+      - lidarr.bubylou.com
+      secretName: lidarr-bubylou-tls

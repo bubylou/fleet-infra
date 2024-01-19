@@ -1,0 +1,69 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lidarr
+  labels:
+    app: lidarr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: lidarr
+  template:
+    metadata:
+      labels:
+        app: lidarr
+    spec:
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      containers:
+        - name: lidarr
+          image: ghcr.io/hotio/lidarr:release-1.4.5.3639
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PGID
+              value: '1000'
+            - name: PUID
+              value: '1000'
+            - name: TZ
+              value: America/New_York
+          ports:
+            - name: http
+              containerPort: 8686
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - curl "http://localhost:8686/api/v3/health?ApiKey=$(sed -ne '/ApiKey/{s/.*<ApiKey>\(.*\)<\/ApiKey>.*/\1/p;q;}' </config/config.xml)"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - curl "http://localhost:8686/api/v3/system/status?ApiKey=$(sed -ne '/ApiKey/{s/.*<ApiKey>\(.*\)<\/ApiKey>.*/\1/p;q;}' </config/config.xml)"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /config
+              name: lidarr-data
+            - mountPath: /data/downloads
+              name: nfs-nas01
+              subPath: Downloads
+            - mountPath: /data/music
+              name: nfs-nas01
+              subPath: Music
+      volumes:
+        - name: lidarr-data
+          persistentVolumeClaim:
+            claimName: lidarr-pvc
+        - name: nfs-nas01
+          nfs:
+            server: nas01.bubylou.com
+            path: /srv/share
