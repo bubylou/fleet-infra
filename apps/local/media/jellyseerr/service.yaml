@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyseerr
+spec:
+  selector:
+    app: jellyseerr
+  sessionAffinity: ClientIP
+  type: ClusterIP
+  ports:
+  - port: 5055
+    targetPort: 5055
+    name: http
+    protocol: TCP

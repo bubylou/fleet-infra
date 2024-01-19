@@ -1,0 +1,79 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin
+  labels:
+    app: jellyfin
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      containers:
+        - name: jellyfin
+          image: ghcr.io/hotio/jellyfin:release-10.8.13-1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PGID
+              value: '1000'
+            - name: PUID
+              value: '1000'
+            - name: TZ
+              value: America/New_York
+            - name: JELLYFIN_PublishedServerUrl
+              value: 'https://jellyfin.bubylou.com'
+          ports:
+            - containerPort: 8096
+              name: http
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8096
+              scheme: HTTP
+          stdin: true
+          tty: true
+          volumeMounts:
+            - mountPath: /config
+              name: jellyfin-config
+            - mountPath: /config/data
+              name: jellyfin-data
+            - mountPath: /config/cache
+              name: jellyfin-cache
+            - mountPath: /data/media/books
+              name: nfs-share
+              subPath: Books
+            - mountPath: /data/media/movies
+              name: nfs-share
+              subPath: Movies
+            - mountPath: /data/media/music
+              name: nfs-share
+              subPath: Music
+            - mountPath: /data/media/tv
+              name: nfs-share
+              subPath: TV
+      volumes:
+        - name: jellyfin-config
+          persistentVolumeClaim:
+            claimName: jellyfin-config
+        - name: jellyfin-data
+          persistentVolumeClaim:
+            claimName: jellyfin-data
+        - name: jellyfin-cache
+          persistentVolumeClaim:
+            claimName: jellyfin-cache
+        - name: nfs-share
+          nfs:
+            server: nas01.bubylou.com
+            path: /srv/share
+            readOnly: true
