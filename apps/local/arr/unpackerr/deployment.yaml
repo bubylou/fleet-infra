@@ -1,0 +1,57 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unpackerr
+  labels:
+    app: unpackerr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: unpackerr
+  template:
+    metadata:
+      labels:
+        app: unpackerr
+    spec:
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      containers:
+        - name: unpackerr
+          image: hotio/unpackerr:release-0.12.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: America/New_York
+            - name: UN_LIDARR_0_URL
+              value: "http://lidarr.arr.svc:8686"
+            - name: UN_LIDARR_0_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: unpackerr
+                  key: UN_LIDARR_API_KEY
+            - name: UN_RADARR_0_URL
+              value: "http://radarr.arr.svc:7878"
+            - name: UN_RADARR_0_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: unpackerr
+                  key: UN_RADARR_API_KEY
+            - name: UN_SONARR_0_URL
+              value: "http://sonarr.arr.svc:8989"
+            - name: UN_SONARR_0_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: unpackerr
+                  key: UN_SONARR_API_KEY
+          volumeMounts:
+            - mountPath: /data/downloads
+              name: nfs-share
+      volumes:
+        - name: nfs-share
+          nfs:
+            server: nas01.bubylou.com
+            path: /srv/share/Downloads
