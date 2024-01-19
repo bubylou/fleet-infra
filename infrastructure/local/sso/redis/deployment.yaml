@@ -1,0 +1,85 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+spec:
+  serviceName: redis
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      initContainers:
+        - name: config
+          image: redis:7.2.3-alpine
+          command: [ "sh", "-c" ]
+          args:
+            - |
+              cp /mnt/tmp/redis.conf /config/redis.conf
+
+              if [ "$(hostname)" != "redis-0" ]; then
+                echo "slaveof redis-0.redis.sso.svc.cluster.local 6379" >> /config/redis.conf
+              fi
+          volumeMounts:
+            - name: redis-config
+              mountPath: /config
+            - name: redis-tmp
+              mountPath: /mnt/tmp
+      containers:
+        - name: redis
+          image: redis:7.2.3-alpine
+          imagePullPolicy: IfNotPresent
+          command: [ "redis-server" ]
+          args:
+            - "/config/redis.conf"
+            - "--masterauth $(REDIS_PASSWORD)"
+            - "--requirepass $(REDIS_PASSWORD)"
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: authelia
+                  key: REDIS_PASSWORD
+                  optional: false
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "redis-cli -h $(hostname) ping"
+            initialDelaySeconds: 10
+            periodSeconds: 2
+          ports:
+            - containerPort: 6379
+              name: client
+            - containerPort: 16379
+              name: gossip
+          volumeMounts:
+            - name: redis-config
+              mountPath: /config
+            - name: redis-data
+              mountPath: /data
+      volumes:
+        - name: redis-config
+          emptyDir: {}
+        - name: redis-tmp
+          configMap:
+            name: redis-config
+            items:
+              - key: redis.conf
+                path: redis.conf
+
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-data
+      spec:
+        storageClassName: local-path
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 5Gi

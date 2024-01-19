@@ -1,0 +1,67 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lldap
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: lldap
+  template:
+    metadata:
+      labels:
+        app: lldap
+    spec:
+      containers:
+        - name: lldap
+          image: lldap/lldap:v0.5.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: LLDAP_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: authelia
+                  key: JWT_SECRET
+            - name: LLDAP_LDAP_BASE_DN
+              value: 'dc=bubylou,dc=com'
+            - name: LLDAP_LDAP_USER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: authelia
+                  key: LDAP_PASSWORD
+            - name: LLDAP_SMTP_OPTIONS_SERVER
+              value: "smtp-relay.brevo.com"
+            - name: LLDAP_SMTP_OPTIONS_SMTP_ENCRYPTION
+              value: "TLS"
+            - name: LLDAP_SMTP_OPTIONS_USER
+              value: "bubylou@bubylou.com"
+            - name: LLDAP_SMTP_OPTIONS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: authelia
+                  key: NOTIFIER_SMTP_PASSWORD
+            - name: LLDAP_SMTP_OPTIONS_FROM
+              value: "Authelia <authelia@bubylou.com>"
+            - name: LLDAP_SMTP_OPTIONS_REPLY_TO
+              value: "Authelia <authelia@bubylou.com>"
+            - name: TZ
+              value: America/New_York
+            - name: GID
+              value: "1000"
+            - name: UID
+              value: "1000"
+          ports:
+            - containerPort: 3890
+              name: ldap
+            - containerPort: 17170
+              name: http
+          volumeMounts:
+            - name: lldap-data
+              mountPath: "/data"
+      volumes:
+        - name: lldap-data
+          persistentVolumeClaim:
+            claimName: lldap-data

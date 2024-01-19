@@ -1,0 +1,50 @@
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16.1-alpine
+          imagePullPolicy: IfNotPresent
+          resources:
+          env:
+            - name: POSTGRES_DB
+              value: authelia
+            - name: POSTGRES_USER
+              value: authelia
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: authelia
+                  key: STORAGE_PASSWORD
+                  optional: false
+            - name: PGDATA
+              value: /var/lib/postgresql/data/db
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+              readOnly: false
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-data
+      restartPolicy: Always

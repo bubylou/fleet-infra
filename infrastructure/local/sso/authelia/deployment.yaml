@@ -1,0 +1,84 @@
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authelia
+  labels:
+    app: authelia
+spec:
+  selector:
+    matchLabels:
+      app: authelia
+  replicas: 2
+  strategy:
+   type: RollingUpdate
+   rollingUpdate:
+     maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: authelia
+    spec:
+      # required https://www.authelia.com/integration/kubernetes/introduction/#enable-service-links
+      enableServiceLinks: false
+      containers:
+        - name: authelia
+          image: authelia/authelia:4.37.5
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - /app/healthcheck.sh
+            initialDelaySeconds: 0
+            periodSeconds: 30
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 9091
+            initialDelaySeconds: 0
+            timeoutSeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+          env:
+            - name: AUTHELIA_JWT_SECRET_FILE
+              value: /app/secrets/JWT_SECRET
+            - name: AUTHELIA_SESSION_SECRET_FILE
+              value: /app/secrets/SESSION_SECRET
+            - name: AUTHELIA_SESSION_REDIS_PASSWORD_FILE
+              value: /app/secrets/REDIS_PASSWORD
+            - name: AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE
+              value: /app/secrets/LDAP_PASSWORD
+            - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE
+              value: /app/secrets/STORAGE_PASSWORD
+            - name: AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE
+              value: /app/secrets/STORAGE_ENCRYPTION_KEY
+            - name: AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE
+              value: /app/secrets/NOTIFIER_SMTP_PASSWORD
+          ports:
+            - containerPort: 9091
+              name: authelia
+          volumeMounts:
+            - mountPath: /config
+              name: config
+              readOnly: false
+            - mountPath: /app/secrets
+              name: secrets
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: authelia
+            items:
+              - key: configuration.yml
+                path: configuration.yml
+        - name: secrets
+          projected:
+            sources:
+            - secret:
+                name: authelia

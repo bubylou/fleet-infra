@@ -1,0 +1,23 @@
+---
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: lldap
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: "sso-authelia@kubernetescrd"
+spec:
+  rules:
+    - host: lldap.bubylou.com
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: lldap
+                port:
+                  name: http
+  tls:
+    - hosts:
+      - lldap.bubylou.com
+      secretName: wildcard-bubylou-com

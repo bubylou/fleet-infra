@@ -1,0 +1,16 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: authelia
+  labels:
+    app.kubernetes.io/instance: authelia
+    app.kubernetes.io/name: authelia
+spec:
+  forwardAuth:
+    address: http://authelia.sso.svc:9091/api/verify?rd=https://auth.bubylou.com
+    authResponseHeaders:
+      - Remote-User
+      - Remote-Name
+      - Remote-Email
+      - Remote-Groups

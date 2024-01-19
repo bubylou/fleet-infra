@@ -1,0 +1,63 @@
+# https://kubernetes.io/docs/concepts/workloads/controllers/job/
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: lldap-bootstrap
+  labels:
+    app: lldap-bootstrap
+spec:
+  template:
+    metadata:
+      name: lldap-bootstrap
+      labels:
+        app: lldap-bootstrap
+    spec:
+      containers:
+      - name: lldap-bootstrap
+        image: lldap/lldap:v0.5.0
+        command: ['/bootstrap/bootstrap.sh']
+        env:
+          - name: LLDAP_URL
+            value: "http://lldap.sso.svc:17170"
+          - name: LLDAP_ADMIN_USERNAME
+            value: admin
+          - name: LLDAP_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: authelia
+                key: LDAP_PASSWORD
+          - name: DO_CLEANUP
+            value: "true"
+        volumeMounts:
+        - name: bootstrap
+          mountPath: /bootstrap/bootstrap.sh
+          subPath: bootstrap.sh
+        - name: user-configs
+          mountPath: /user-configs
+          readOnly: true
+        - name: group-configs
+          mountPath: /group-configs
+          readOnly: true
+      volumes:
+      - name: bootstrap
+        configMap:
+          name: lldap
+          defaultMode: 0555
+          items:
+            - key: bootstrap.sh
+              path: bootstrap.sh
+      - name: user-configs
+        secret:
+          secretName: lldap
+          items:
+            - key: users.json 
+              path: users.json 
+      - name: group-configs
+        secret:
+          secretName: lldap
+          items:
+            - key: groups.json 
+              path: groups.json 
+      restartPolicy: OnFailure
+      dnsPolicy: ClusterFirst

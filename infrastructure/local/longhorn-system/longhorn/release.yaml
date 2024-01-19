@@ -31,3 +31,5 @@ spec:
       tls: true
       tlsSecret: longhorn-bubylou-tls
       path: /
+      annotations:
+        traefik.ingress.kubernetes.io/router.middlewares: "sso-authelia@kubernetescrd"

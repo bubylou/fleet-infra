@@ -1,0 +1,187 @@
+# https://kubernetes.io/docs/concepts/configuration/configmap/
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: authelia
+data:
+  configuration.yml: |
+    theme: dark
+    default_redirection_url: https://bubylou.com/
+    default_2fa_method: webauthn
+
+    server:
+      host: 0.0.0.0
+      port: 9091
+      path: ""
+
+      enable_pprof: false
+      enable_expvars: false
+      disable_healthcheck: false
+
+    log:
+      level: info
+      keep_stdout: false
+
+    totp:
+      disable: false
+      issuer: authelia.com
+      algorithm: sha256
+      digits: 8
+      period: 60
+      skew: 1
+      secret_size: 32
+
+    webauthn:
+      disable: false
+      timeout: 60s
+      display_name: Authelia
+      attestation_conveyance_preference: indirect
+      user_verification: preferred
+
+    duo_api:
+      disable: true
+
+    ntp:
+      address: "time.cloudflare.com:123"
+      version: 4
+      max_desync: 3s
+      disable_startup_check: false
+      disable_failure: false
+    authentication_backend:
+      password_reset:
+        disable: false
+      refresh_interval: 1m
+
+      ldap:
+        implementation: custom
+        url: ldap://lldap.sso.svc:3890
+        timeout: 5s
+        start_tls: false
+        base_dn: dc=bubylou,dc=com
+        username_attribute: uid
+        additional_users_dn: ou=people
+        users_filter: "(&(|({username_attribute}={input})({mail_attribute}={input}))(objectClass=person))"
+        additional_groups_dn: ou=groups
+        groups_filter: "(member={dn})"
+        group_name_attribute: cn
+        mail_attribute: mail
+        display_name_attribute: displayName
+        permit_referrals: false
+        user: uid=admin,ou=people,dc=bubylou,dc=com
+
+    password_policy:
+      standard:
+        enabled: false
+
+      zxcvbn:
+        enabled: true
+        min_score: 3
+
+    access_control:
+      default_policy: deny
+      networks:
+        - name: internal
+          networks:
+          - '10.0.0.0/8'
+          - '192.168.0.0/18'
+
+      rules:
+        # bypass
+        - domain: 'bubylou.com'
+          policy: bypass
+        - domain_regex: '(blog|jellyfin|random)\.bubylou\.com$'
+          policy: bypass
+        - domain_regex: '(gonic|navidrome)\.bubylou\.com$'
+          policy: bypass
+          resources:
+            - '^/rest/.*$'
+        - domain: 'kuma.bubylou.com'
+          policy: bypass
+          resources:
+            - '^/api/status-page/.*$'
+            - '^/assets/index.*$'
+            - '^/icon.svg$'
+            - '^/status$'
+            - '^/status/$'
+        - domain_regex: '(bazarr|lidarr|prowlarr|radarr|readarr|sonarr)\.bubylou\.com$'
+          policy: bypass
+          resources:
+          - "^/api/.*$"
+        - domain: 'qbittorrent.bubylou.com'
+          policy: bypass
+          resources:
+            - '^/api/v2/.*$'
+
+        # one factor
+        - domain_regex: '(dashy|mealie|navidrome|jellyseerr)\.bubylou\.com$'
+          policy: one_factor
+
+        # two factor
+        - domain_regex: '^.*\.bubylou\.com$'
+          policy: two_factor
+          networks:
+            - internal
+          subject:
+            - 'group:k3s_admin'
+        - domain_regex: '(bazarr|lidarr|prowlarr|radarr|readarr|sonarr)\.bubylou\.com$'
+          policy: two_factor
+          networks:
+            - internal
+          subject:
+            - 'group:arr_admin'
+        - domain: 'qbittorrent.bubylou.com'
+          policy: two_factor
+          networks:
+            - internal
+          subject:
+            - 'group:arr_admin'
+        - domain_regex: '(grafana|kuma|longhorn)\.bubylou\.com$'
+          policy: two_factor
+          networks:
+            - internal
+          subject:
+            - 'group:k3s_admin'
+
+    session:
+      name: authelia_session
+      domain: bubylou.com
+      same_site: lax
+      expiration: 1h
+      inactivity: 5m
+      remember_me_duration: 1M
+
+      redis:
+        host: redis-0.redis.sso.svc
+        port: 6379
+        database_index: 0
+        maximum_active_connections: 8
+        minimum_idle_connections: 0
+
+    regulation:
+      max_retries: 3
+      find_time: 2m
+      ban_time: 5m
+
+    storage:
+      postgres:
+        host: postgres.sso.svc
+        port: 5432
+        database: authelia
+        schema: public
+        username: authelia
+        timeout: 5s
+
+    notifier:
+      disable_startup_check: false
+      smtp:
+        host: smtp-relay.brevo.com
+        port: 587
+        timeout: 5s
+        username: bubylou@bubylou.com
+        sender: "No Reply <no-reply@bubylou.com>"
+        identifier: localhost
+        subject: "[Authelia] {title}"
+        startup_check_address: test@authelia.com
+        disable_require_tls: true
+        disable_html_emails: false

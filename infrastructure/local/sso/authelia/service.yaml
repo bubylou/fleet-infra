@@ -1,0 +1,15 @@
+# https://kubernetes.io/docs/concepts/services-networking/service/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authelia
+spec:
+  selector:
+    app: authelia
+  type: ClusterIP
+  ports:
+    - name: authelia
+      protocol: TCP
+      port: 9091
+      targetPort: 9091
