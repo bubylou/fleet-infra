@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minecraft
+spec:
+  selector:
+    app: minecraft
+  ports:
+    - port: 25565
+      protocol: TCP
+      targetPort: minecraft
+      nodePort: 35565
+  sessionAffinity: None
+  type: NodePort

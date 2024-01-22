@@ -1,0 +1,88 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minecraft
+  labels:
+    app: minecraft
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: minecraft
+  template:
+    metadata:
+      labels:
+        app: minecraft
+    spec:
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      containers:
+        - name: minecraft
+          image: itzg/minecraft-server:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: minecraft-config
+          ports:
+            - name: minecraft
+              containerPort: 25565
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command: ["mc-health"]
+            initialDelaySeconds: 120
+            periodSeconds: 60
+          readinessProbe:
+            exec:
+              command: ["mc-health"]
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            failureThreshold: 20
+          resources:
+            requests:
+              cpu: 2000m
+              memory: 2Gi
+            limits:
+              cpu: 4000m
+              memory: 4Gi
+          volumeMounts:
+          - mountPath: /data
+            name: minecraft-data
+          - mountPath: /extra
+            name: minecraft-secrets
+        - name: backup
+          image: itzg/mc-backup:latest
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1000
+          envFrom:
+            - configMapRef:
+                name: backup-config
+          volumeMounts:
+            - mountPath: /data
+              name: minecraft-data
+              readOnly: true
+            - mountPath: /backups
+              name: minecraft-backups
+      volumes:
+      - name: minecraft-data
+        persistentVolumeClaim:
+          claimName: minecraft-pvc
+      - name: minecraft-secrets
+        secret:
+          secretName: minecraft-secrets
+          items:
+          - key: whitelist.json
+            path: whitelist.json
+          - key: ops.json
+            path: ops.json
+      - name: minecraft-backups
+        nfs:
+          server: nas01.bubylou.com
+          path: /srv/k3s/minecraft

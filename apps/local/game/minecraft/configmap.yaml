@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: minecraft-config
+  labels:
+    app: minecraft
+data:
+  EULA: 'TRUE'
+  TYPE: 'PAPER'
+  INIT_MEMORY: '1G'
+  MAX_MEMORY: '2G'
+  VERSION: '1.20'
+  SERVER_NAME: Bubylou
+  SERVER_PORT: '25565'
+  # Used for health/monitoring tools
+  # DO NOT map port externally
+  ENABLE_RCON: 'true'
+  ICON: 'http://images2.wikia.nocookie.net/__cb20120908145844/flapjack/images/4/43/Bubbie.png'
+  MOTD: 'a Lou production'
+  WHITELIST_FILE: /extra/whitelist.json
+  OPS_FILE: /extra/ops.json
+  ANNOUNCE_PLAYER_ACHIEVEMENTS: 'true'
+  ALLOW_FLIGHT: 'false'
+  MAX_PLAYERS: '20'
+  VIEW_DISTANCE: '16'
+  ONLINE_MODE: 'true'
+  # LEVEL_TYPE: flat
+  # SEED: ''
+  # MAX_BUILD_HEIGHT: 256
+  # MAX_WORLD_SIZE: 10000
+  # MAX_TICK_TIME: 60000
+  LEVEL: world
+  DIFFICULTY: normal
+  HARDCORE: 'false'
+  FORCE_GAMEMODE: 'true'
+  MODE: survival
+  PVP: 'true'
+  RESOURCE_PACK: 'https://www.dropbox.com/s/c87ifjhd158yjtt/AnimeMemes_Light.zip?dl=1'
+  RESOURCE_PACK_SHA1: 813e8a2a010bc977740316d1e8348c757d8aa4ce 
+  RESOURCE_PACK_ENFORCE: 'false'
+  ALLOW_NETHER: 'true'
+  ENABLE_COMMAND_BLOCK: 'false'
+  GENERATE_STRUCTURES: 'true'
+  SPAWN_ANIMALS: 'true'
+  SPAWN_MONSTERS: 'true'
+  SPAWN_NPCS: 'true'
+  SPAWN_PROTECTION: '16'
+  SNOOPER_ENABLED: 'false'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backup-config
+  labels:
+    app: minecraft
+data:
+    DEST_DIR: /backups
+    SRC_DIR: /data
+    INITIAL_DELAY: 2m
+    BACKUP_INTERVAL: 24h
+    PAUSE_IF_NO_PLAYERS: 'false'
+    PLAYERS_ONLINE_CHECK_INTERVAL: 5m
+    PRUNE_BACKUPS_DAYS: '7'
+    SERVER_PORT: '25565'
+    RCON_HOST: localhost
+    RCON_PORT: '25575'
+    RCON_RETRIES: '5'
+    RCON_RETRY_INTERVAL: 10s
+    EXCLUDES: '*.jar,cache,logs'
+    BACKUP_METHOD: tar
