@@ -1,0 +1,60 @@
+# https://kubernetes.io/docs/concepts/configuration/configmap/
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: qbittorrent-config
+data:
+  qBittorrent.conf: |
+    [Application]
+    FileLogger\Age=1
+    FileLogger\AgeType=1
+    FileLogger\Backup=true
+    FileLogger\DeleteOld=true
+    FileLogger\Enabled=true
+    FileLogger\MaxSizeBytes=66560
+    FileLogger\Path=/app/qBittorrent/data/logs
+
+    [BitTorrent]
+    Session\AlternativeGlobalDLSpeedLimit=268435
+    Session\AlternativeGlobalUPSpeedLimit=268435
+    Session\DefaultSavePath=/data/downloads/complete
+    Session\DisableAutoTMMByDefault=false
+    Session\ExcludedFileNames=
+    Session\GlobalDLSpeedLimit=536871
+    Session\GlobalUPSpeedLimit=536871
+    ; 21 days, 21 * 24 * 60 = 30240
+    Session\GlobalMaxSeedingMinutes=30240
+    Session\LSDEnabled=false
+    Session\MaxConnections=300
+    Session\MaxConnectionsPerTorrent=50
+    Session\MaxRatioAction=3
+    Session\Port=48041
+    Session\QueueingSystemEnabled=false
+    Session\TempPath=/data/downloads/incomplete
+    Session\TempPathEnabled=true
+
+    [Core]
+    AutoDeleteAddedTorrentFile=Never
+
+    [Meta]
+    MigrationVersion=6
+
+    [Preferences]
+    Connection\GlobalUPLimit=536871
+    Connection\GlobalDLLimit=536871
+    Downloads\SavePath=/data/downloads/complete
+    Downloads\TempPath=/data/downloads/incomplete
+    General\Locale=en
+    MailNotification\req_auth=true
+    WebUI\AlternativeUIEnabled=true
+    WebUI\AuthSubnetWhitelist=10.0.0.0/8
+    WebUI\AuthSubnetWhitelistEnabled=true
+    WebUI\HostHeaderValidation=false
+    WebUI\LocalHostAuth=false
+    WebUI\RootFolder=/app/vuetorrent
+    WebUI\UseUPnP=false
+
+    [RSS]
+    AutoDownloader\DownloadRepacks=true
+    AutoDownloader\SmartEpisodeFilter=s(\\d+)e(\\d+), (\\d+)x(\\d+), "(\\d{4}[.\\-]\\d{1,2}[.\\-]\\d{1,2})", "(\\d{1,2}[.\\-]\\d{1,2}[.\\-]\\d{4})"
