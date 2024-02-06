@@ -1,0 +1,81 @@
+# yaml-language-server: kubernetes
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mealie
+  labels:
+    app: mealie
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mealie
+  template:
+    metadata:
+      labels:
+        app: mealie
+    spec:
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      containers:
+        - name: mealie
+          image: ghcr.io/mealie-recipes/mealie:v1.1.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: ALLOW_SIGNUP
+              value: "false"
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: America/New_York
+            - name: MAX_WORKERS
+              value: "1"
+            - name: WEB_CONCURRENCY
+              value: "1"
+            - name: BASE_URL
+              value: "https://mealie.bubylou.com"
+            - name: LDAP_AUTH_ENABLED
+              value: "true"
+            - name: LDAP_SERVER_URL
+              value: "ldap://lldap.sso.svc:3890"
+            - name: LDAP_BASE_DN
+              value: "ou=people,dc=bubylou,dc=com"
+            - name: LDAP_USER_FILTER
+              value: "(memberof=cn=mealie,ou=groups,dc=bubylou,dc=com)"
+            - name: LDAP_ADMIN_FILTER
+              value: "(memberof=cn=mealie_admin,ou=groups,dc=bubylou,dc=com)"
+            - name: LDAP_QUERY_BIND
+              valueFrom:
+                secretKeyRef:
+                  name: mealie
+                  key: LDAP_QUERY_BIND
+            - name: LDAP_QUERY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mealie
+                  key: LDAP_QUERY_PASSWORD
+            - name: LDAP_ID_ATTRIBUTE
+              value: uid
+            - name: LDAP_NAME_ATTRIBUTE
+              value: displayName
+            - name: LDAP_MAIL_ATTRIBUTE
+              value: mail
+          ports:
+            - containerPort: 9000
+              name: mealie-http
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: mealie-http
+              scheme: HTTP
+          volumeMounts:
+            - mountPath: /app/data
+              name: mealie-data
+      volumes:
+        - name: mealie-data
+          persistentVolumeClaim:
+            claimName: mealie-data

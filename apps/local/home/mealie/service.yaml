@@ -1,0 +1,16 @@
+# https://kubernetes.io/docs/concepts/services-networking/service/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mealie
+spec:
+  selector:
+    app: mealie
+  sessionAffinity: ClientIP
+  type: ClusterIP
+  ports:
+  - port: 9000
+    targetPort: 9000
+    name: mealie-http
+    protocol: TCP

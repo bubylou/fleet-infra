@@ -1,24 +1,25 @@
+# https://kubernetes.io/docs/concepts/services-networking/ingress/
 ---
-kind: Ingress
 apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: lldap
+  name: mealie
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-production"
     traefik.ingress.kubernetes.io/router.middlewares: "sso-authelia@kubernetescrd"
 spec:
   rules:
-    - host: lldap.bubylou.com
+    - host: mealie.bubylou.com
       http:
         paths:
-          - pathType: Prefix
-            path: /
+          - path: /
+            pathType: Prefix
             backend:
               service:
-                name: lldap
+                name: mealie
                 port:
-                  name: http
+                  name: mealie-http
   tls:
     - hosts:
-      - lldap.bubylou.com
-      secretName: lldap-bubylou-tls
+      - mealie.bubylou.com
+      secretName: mealie-bubylou-tls
