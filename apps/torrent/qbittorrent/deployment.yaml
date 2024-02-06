@@ -32,7 +32,7 @@ spec:
             ]
       containers:
         - name: qbittorrent
-          image: hotio/qbittorrent:release-4.6.2
+          image: hotio/qbittorrent:release-4.6.3
           imagePullPolicy: IfNotPresent
           securityContext:
             capabilities:

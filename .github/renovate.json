@@ -1,0 +1,16 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "kubernetes": {
+    "fileMatch": [
+      "apps/.+/deployment\\.ya?ml$"
+    ]
+  },
+  "helm-values": {
+    "fileMatch": [
+      "apps/.+/release\\.ya?ml$"
+    ]
+  }
+}

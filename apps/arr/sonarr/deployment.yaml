@@ -21,7 +21,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: sonarr
-          image: ghcr.io/hotio/sonarr:release-3.0.10.1567
+          image: ghcr.io/hotio/sonarr:release-4.0.1.929
           imagePullPolicy: IfNotPresent
           env:
             - name: PGID

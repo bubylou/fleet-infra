@@ -21,7 +21,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: unpackerr
-          image: hotio/unpackerr:release-0.12.0
+          image: hotio/unpackerr:release-0.13.1
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ

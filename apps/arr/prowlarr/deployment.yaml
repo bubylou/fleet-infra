@@ -21,7 +21,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: prowlarr
-          image: ghcr.io/hotio/prowlarr:release-1.10.5.4116
+          image: ghcr.io/hotio/prowlarr:release-1.12.2.4211
           imagePullPolicy: IfNotPresent
           env:
             - name: PGID
