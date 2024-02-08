@@ -5,12 +5,23 @@
   ],
   "kubernetes": {
     "fileMatch": [
-      "apps/.+/deployment\\.ya?ml$"
+      "apps/.+/deployment\\.ya?ml$",
+      "infrastructure/.+/deployment\\.ya?ml$"
     ]
   },
   "helm-values": {
     "fileMatch": [
-      "apps/.+/release\\.ya?ml$"
+      "apps/.+/release\\.ya?ml$",
+      "infrastructure/.+/deployment\\.ya?ml$"
     ]
-  }
+  },
+  "packageRules": [
+    {
+      "matchPackagePatterns": [
+        "ghcr.io/hotio/*"
+      ],
+      "groupName": "hotio",
+      "versioning": "regex:^release-(?<major>\\d+).(?<minor>\\d+).(?<patch>\\d+)\\.(?<revision>\\d+)$"
+    }
+  ]
 }
