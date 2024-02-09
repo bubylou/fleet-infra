@@ -16,7 +16,7 @@ spec:
     spec:
       initContainers:
         - name: config
-          image: redis:7.2.3-alpine
+          image: redis:7.2.4-alpine
           command: [ "sh", "-c" ]
           args:
             - |
@@ -32,7 +32,7 @@ spec:
               mountPath: /mnt/tmp
       containers:
         - name: redis
-          image: redis:7.2.3-alpine
+          image: redis:7.2.4-alpine
           imagePullPolicy: IfNotPresent
           command: [ "redis-server" ]
           args:
