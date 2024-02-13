@@ -6,6 +6,10 @@ metadata:
 spec:
   serviceName: redis
   replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: redis

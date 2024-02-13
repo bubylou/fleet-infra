@@ -8,6 +8,10 @@ metadata:
     app: bind9
 spec:
   replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: bind9
