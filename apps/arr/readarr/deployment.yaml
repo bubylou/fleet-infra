@@ -1,0 +1,58 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: readarr
+  labels:
+    app: readarr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: readarr
+  template:
+    metadata:
+      labels:
+        app: readarr
+    spec:
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      containers:
+        - name: readarr
+          image: ghcr.io/hotio/readarr:testing-0.3.18.2411
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PGID
+              value: '1000'
+            - name: PUID
+              value: '1000'
+            - name: TZ
+              value: America/New_York
+          ports:
+            - name: http
+              containerPort: 8787
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8787
+              scheme: HTTP
+          volumeMounts:
+            - mountPath: /config
+              name: readarr-config
+            - mountPath: /data/downloads
+              name: nfs-nas01
+              subPath: Downloads
+            - mountPath: /data/books
+              name: nfs-nas01
+              subPath: Books
+      volumes:
+        - name: readarr-config
+          persistentVolumeClaim:
+            claimName: readarr-pvc
+        - name: nfs-nas01
+          nfs:
+            server: nas01.bubylou.com
+            path: /srv/share
