@@ -1,0 +1,24 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: calibre
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    traefik.ingress.kubernetes.io/router.middlewares: "sso-authelia@kubernetescrd"
+spec:
+  rules:
+    - host: calibre.bubylou.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: calibre
+                port:
+                  number: 8080
+  tls:
+    - hosts:
+      - calibre.bubylou.com
+      secretName: calibre-bubylou-tls
