@@ -96,6 +96,10 @@ data:
           policy: bypass
           resources:
             - '^/rest/.*$'
+        - domain: 'calibre-web.bubylou.com'
+          policy: bypass
+          resources:
+            - '^/api/opds/.*$'
         - domain: 'kuma.bubylou.com'
           policy: bypass
           resources:
@@ -114,7 +118,7 @@ data:
             - '^/api/v2/.*$'
 
         # one factor
-        - domain_regex: '(dashy|mealie|navidrome|jellyseerr)\.bubylou\.com$'
+        - domain_regex: '(calibre-web|dashy|mealie|navidrome|jellyseerr)\.bubylou\.com$'
           policy: one_factor
 
         # two factor
@@ -130,7 +134,7 @@ data:
             - internal
           subject:
             - 'group:arr_admin'
-        - domain: 'qbittorrent.bubylou.com'
+        - domain_regex: '(calibre|qbittorrent)\.bubylou\.com$'
           policy: two_factor
           networks:
             - internal

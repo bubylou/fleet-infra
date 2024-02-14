@@ -30,6 +30,10 @@ data:
         description: Movie manager
         icon: generative
         url: https://radarr.bubylou.com
+      - title: readarr
+        description: Book manager
+        icon: generative
+        url: https://readarr.bubylou.com
       - title: sonarr
         description: TV manager
         icon: generative
@@ -59,6 +63,14 @@ data:
     - name: Media
       icon: generative
       items:
+      - title: calibre
+        description: Book manager
+        icon: generative
+        url: https://calibre.bubylou.com
+      - title: calibre-web
+        description: Book reader
+        icon: generative
+        url: https://calibre-web.bubylou.com
       - title: jellyfin
         description: Video player
         icon: generative
