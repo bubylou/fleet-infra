@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calibre
+  labels:
+    app: calibre
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: calibre
+  template:
+    metadata:
+      labels:
+        app: calibre
+    spec:
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      containers:
+        - name: calibre
+          image: ghcr.io/linuxserver/calibre:7.5.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: America/New_York
+            - name: FM_HOME
+              value: /data
+          ports:
+            - name: vnc
+              containerPort: 8080
+              protocol: TCP
+            - name: calibre
+              containerPort: 8081
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+          volumeMounts:
+            - mountPath: /config
+              name: calibre-config
+            - mountPath: /data/books
+              name: nfs-nas01
+              subPath: Books
+            - mountPath: /data/downloads
+              name: nfs-nas01
+              subPath: Downloads
+      volumes:
+        - name: calibre-config
+          persistentVolumeClaim:
+            claimName: calibre-pvc
+        - name: nfs-nas01
+          nfs:
+            server: nas01.bubylou.com
+            path: /srv/share
