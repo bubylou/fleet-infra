@@ -1,0 +1,26 @@
+on:
+  pull_request:
+    paths:
+      - '**/authelia/configuration.yml'
+
+jobs:
+  authelia-action:
+    runs-on: ubuntu-latest
+    name: Validate the Authelia configuration file
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Authelia action
+        id: authelia
+        uses: bubylou/authelia-validate@v1
+        env:
+          AUTHELIA_JWT_SECRET: test
+          AUTHELIA_SESSION_SECRET: test
+          AUTHELIA_SESSION_REDIS_PASSWORD: test
+          AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD: test
+          AUTHELIA_STORAGE_POSTGRES_PASSWORD: test
+          AUTHELIA_STORAGE_ENCRYPTION_KEY: twentycharacterslong
+          AUTHELIA_NOTIFIER_SMTP_PASSWORD: test
+        with:
+          file-path: ./infrastructure/sso/authelia/configuration.yml
