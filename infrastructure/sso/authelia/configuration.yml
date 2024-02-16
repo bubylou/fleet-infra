@@ -84,6 +84,10 @@ access_control:
       policy: bypass
     - domain_regex: '(blog|jellyfin|random)\.bubylou\.com$'
       policy: bypass
+    - domain: 'calibre-web.bubylou.com'
+      policy: bypass
+      resources:
+        - '^/api/opds/.*$'
     - domain_regex: '(gonic|navidrome)\.bubylou\.com$'
       policy: bypass
       resources:
@@ -106,7 +110,7 @@ access_control:
         - '^/api/v2/.*$'
 
     # one factor
-    - domain_regex: '(dashy|mealie|navidrome|jellyseerr)\.bubylou\.com$'
+    - domain_regex: '(calibre-web|dashy|mealie|navidrome|jellyseerr)\.bubylou\.com$'
       policy: one_factor
 
     # two factor
@@ -122,7 +126,7 @@ access_control:
         - internal
       subject:
         - 'group:arr_admin'
-    - domain: 'qbittorrent.bubylou.com'
+    - domain_regex: '(calibre|qbittorrent)\.bubylou\.com$'
       policy: two_factor
       networks:
         - internal
