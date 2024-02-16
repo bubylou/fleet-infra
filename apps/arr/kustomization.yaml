@@ -7,5 +7,6 @@ resources:
   - lidarr
   - prowlarr
   - radarr
+  - readarr
   - sonarr
   - unpackerr

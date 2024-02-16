@@ -20,8 +20,15 @@
       "matchPackagePatterns": [
         "ghcr.io/hotio/*"
       ],
-      "groupName": "hotio",
+      "groupName": "hotio-release",
       "versioning": "regex:^release-(?<major>\\d+).(?<minor>\\d+).(?<patch>\\d+)\\.(?<revision>\\d+)$"
+    },
+    {
+      "matchPackageNames": [
+        "ghcr.io/hotio/readarr"
+      ],
+      "groupName": "hotio-testing",
+      "versioning": "regex:^testing-(?<major>\\d+).(?<minor>\\d+).(?<patch>\\d+)\\.(?<revision>\\d+)$"
     }
   ]
 }
