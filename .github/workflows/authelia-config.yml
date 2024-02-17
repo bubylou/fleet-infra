@@ -13,7 +13,7 @@ jobs:
 
       - name: Authelia action
         id: authelia
-        uses: bubylou/authelia-validate@v1
+        uses: bubylou/authelia-validate@v2
         env:
           AUTHELIA_JWT_SECRET: test
           AUTHELIA_SESSION_SECRET: test
