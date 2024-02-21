@@ -15,6 +15,11 @@ log:
   level: info
   keep_stdout: false
 
+telemetry:
+  metrics:
+    enabled: true
+    address: "tcp://0.0.0.0:9959"
+
 totp:
   disable: false
   issuer: authelia.com

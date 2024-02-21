@@ -6,6 +6,7 @@ metadata:
   name: authelia
   labels:
     app: authelia
+    app.kubernetes.io/component: monitoring
 spec:
   replicas: 3
   strategy:
@@ -15,10 +16,12 @@ spec:
   selector:
     matchLabels:
       app: authelia
+      app.kubernetes.io/component: monitoring
   template:
     metadata:
       labels:
         app: authelia
+        app.kubernetes.io/component: monitoring
     spec:
       # required https://www.authelia.com/integration/kubernetes/introduction/#enable-service-links
       enableServiceLinks: false
