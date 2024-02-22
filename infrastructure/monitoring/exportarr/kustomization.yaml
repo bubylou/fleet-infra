@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: monitoring
+resources:
+  - bazarr-deployment.yaml
+  - lidarr-deployment.yaml
+  - radarr-deployment.yaml
+  - readarr-deployment.yaml
+  - sonarr-deployment.yaml
+  - secret-sealed.yaml
