@@ -1,0 +1,67 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gonic
+  labels:
+    app: gonic
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: gonic
+  template:
+    metadata:
+      labels:
+        app: gonic
+    spec:
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      containers:
+        - name: gonic
+          image: ghcr.io/sentriz/gonic:v0.16.2
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: GONIC_SCAN_INTERVAL
+              value: '120'
+            - name: TZ
+              value: America/New_York
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+              scheme: HTTP
+          stdin: true
+          tty: true
+          volumeMounts:
+            - mountPath: /cache
+              name: gonic-cache
+            - mountPath: /data
+              name: gonic-data
+            - mountPath: /music
+              name: nfs-share
+              subPath: Music
+            - mountPath: /playlists
+              name: nfs-share
+              subPath: Playlists
+            - mountPath: /podcasts
+              name: nfs-share
+              subPath: Podcasts
+      volumes:
+        - name: gonic-cache
+          persistentVolumeClaim:
+            claimName: gonic-cache
+        - name: gonic-data
+          persistentVolumeClaim:
+            claimName: gonic-data
+        - name: nfs-share
+          nfs:
+            server: nas01.bubylou.com
+            path: /srv/share
+            readOnly: true

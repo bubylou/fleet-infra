@@ -1,25 +1,24 @@
-# https://kubernetes.io/docs/concepts/services-networking/ingress/
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: navidrome
+  name: airsonic
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-production"
     traefik.ingress.kubernetes.io/router.middlewares: "sso-authelia@kubernetescrd"
 spec:
   rules:
-    - host: navidrome.bubylou.com
+    - host: airsonic.bubylou.com
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: navidrome
+                name: airsonic
                 port:
                   name: http
   tls:
     - hosts:
-      - navidrome.bubylou.com
-      secretName: navidrome-bubylou-tls
+      - airsonic.bubylou.com
+      secretName: airsonic-bubylou-tls
