@@ -1,0 +1,109 @@
+# https://kubernetes.io/docs/concepts/configuration/configmap/
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gatus-config
+data:
+  config.yaml: |
+    metrics: false
+
+    storage:
+      type: memory
+
+    default-endpoint: &defaults
+      group: internal
+      interval: 15m
+      conditions:
+        - "[STATUS] == 200"
+        - "[RESPONSE_TIME] < 300"
+
+    endpoints:
+      - name: External DNS
+        group: external
+        url: "1.1.1.1"
+        interval: 15m
+        dns:
+          query-name: "bubylou.com"
+          query-type: "A"
+        conditions:
+          - "[DNS_RCODE] == NOERROR"
+      - name: mealie
+        <<: *defaults
+        group: external
+        url: "http://mealie.home.svc:9000"
+      - name: calibre-web
+        <<: *defaults
+        group: external
+        url: "http://calibre-web.media.svc:8083"
+      - name: jellyfin
+        <<: *defaults
+        group: external
+        url: "http://jellyfin.media.svc:8096"
+      - name: jellyseerr
+        <<: *defaults
+        group: external
+        url: "http://jellyseerr.media.svc:5055"
+      - name: navidrome
+        <<: *defaults
+        group: external
+        url: "http://navidrome.music.svc:4533"
+      - name: dashy
+        <<: *defaults
+        group: external
+        url: "http://dashy.website.svc:4000"
+      - name: random
+        <<: *defaults
+        group: external
+        url: "http://random.website.svc:3000"
+      - name: website
+        <<: *defaults
+        group: external
+        url: "http://nginx.website.svc:80"
+
+      - name: Internal DNS
+        group: internal
+        url: "192.168.1.91"
+        interval: 15m
+        dns:
+          query-name: "bubylou.com"
+          query-type: "A"
+        conditions:
+          - "[BODY] == 192.168.1.90"
+          - "[DNS_RCODE] == NOERROR"
+      - name: bazarr
+        <<: *defaults
+        url: "http://bazarr.arr.svc:6767"
+      - name: lidarr
+        <<: *defaults
+        url: "http://lidarr.arr.svc:8686"
+      - name: prowlarr
+        <<: *defaults
+        url: "http://prowlarr.arr.svc:9696"
+      - name: radarr
+        <<: *defaults
+        url: "http://radarr.arr.svc:7878"
+      - name: readarr
+        <<: *defaults
+        url: "http://readarr.arr.svc:8787"
+      - name: sonarr
+        <<: *defaults
+        url: "http://sonarr.arr.svc:8989"
+      - name: calibre
+        <<: *defaults
+        url: "http://calibre.media.svc:8080"
+      - name: qbittorrent
+        <<: *defaults
+        url: "http://qbittorrent.torrent.svc:8080"
+      - name: authelia
+        <<: *defaults
+        url: "http://authelia.sso.svc:9091"
+      - name: grafana
+        <<: *defaults
+        url: "http://kube-prometheus-stack-grafana.monitoring.svc:80"
+      - name: lldap
+        <<: *defaults
+        url: "http://lldap.sso.svc:17170"
+      - name: longhorn
+        <<: *defaults
+        url: "http://longhorn-frontend.longhorn-system.svc:80"

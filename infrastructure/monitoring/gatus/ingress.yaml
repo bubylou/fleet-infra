@@ -1,0 +1,24 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gatus
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    traefik.ingress.kubernetes.io/router.middlewares: "sso-authelia@kubernetescrd"
+spec:
+  rules:
+    - host: status.bubylou.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gatus
+                port:
+                  name: gatus-http
+  tls:
+    - hosts:
+      - status.bubylou.com
+      secretName: status-bubylou-tls
