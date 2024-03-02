@@ -1,0 +1,77 @@
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gatus
+  labels:
+    app: gatus
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: gatus
+  template:
+    metadata:
+      labels:
+        app: gatus
+    spec:
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      containers:
+        - name: gatus
+          image: twinproduction/gatus:v5.7.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: America/New_York
+            - name: POSTGRES_DB
+              value: gatus
+            - name: POSTGRES_USER
+              value: gatus
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gatus
+                  key: POSTGRES_PASSWORD
+                  optional: false
+          resources:
+            limits:
+              cpu: 250m
+              memory: 100M
+            requests:
+              cpu: 50m
+              memory: 30M
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 5
+          ports:
+            - name: gatus-http
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /config
+              name: gatus-config
+              readOnly: false
+      volumes:
+        - name: gatus-config
+          configMap:
+            name: gatus-config
+            items:
+              - key: config.yaml
+                path: config.yaml
