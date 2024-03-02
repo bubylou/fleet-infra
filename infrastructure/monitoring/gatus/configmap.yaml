@@ -8,8 +8,18 @@ data:
   config.yaml: |
     metrics: false
 
+    alerting:
+      discord:
+        webhook-url: "${DISCORD_WEBHOOK}"
+        default-alert:
+          description: "health check failed"
+          send-on-resolved: true
+          failure-threshold: 5
+          success-threshold: 5
+
     storage:
-      type: memory
+      type: postgres
+      path: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres.monitoring.svc:5432/${POSTGRES_DB}?sslmode=disable"
 
     default-endpoint: &defaults
       group: internal
@@ -17,6 +27,8 @@ data:
       conditions:
         - "[STATUS] == 200"
         - "[RESPONSE_TIME] < 300"
+      alerts:
+        - type: discord
 
     endpoints:
       - name: External DNS
@@ -28,6 +40,8 @@ data:
           query-type: "A"
         conditions:
           - "[DNS_RCODE] == NOERROR"
+        alerts:
+          - type: discord
       - name: mealie
         <<: *defaults
         group: external
@@ -71,6 +85,8 @@ data:
         conditions:
           - "[BODY] == 192.168.1.90"
           - "[DNS_RCODE] == NOERROR"
+        alerts:
+          - type: discord
       - name: bazarr
         <<: *defaults
         url: "http://bazarr.arr.svc:6767"
