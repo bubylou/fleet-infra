@@ -22,7 +22,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: mealie
-          image: ghcr.io/mealie-recipes/mealie:v1.2.0
+          image: ghcr.io/mealie-recipes/mealie:v1.3.0
           imagePullPolicy: IfNotPresent
           env:
             - name: ALLOW_SIGNUP
