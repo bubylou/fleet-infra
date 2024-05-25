@@ -1,0 +1,71 @@
+# yaml-language-server: kubernetes
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: valheim
+  labels:
+    app: valheim
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: valheim
+  template:
+    metadata:
+      labels:
+        app: valheim
+    spec:
+      nodeName: nas01
+      restartPolicy: Always
+      containers:
+        - name: valheim
+          image: lloesche/valheim-server
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: America/New_York
+            - name: SERVER_NAME
+              value: "Bubylou"
+            - name: SERVER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: valheim
+                  key: SERVER_PASS
+            - name: WORLD_NAME
+              value: "fuckpost"
+            - name: VALHEIM_PLUS_REPO
+              value: "Grantapher/ValheimPlus"
+            - name: VALHEIM_PLUS
+              value: "true"
+            - name: ADMINLIST_IDS
+              valueFrom:
+                secretKeyRef:
+                  name: valheim
+                  key: ADMINLIST_IDS
+          ports:
+            - containerPort: 2456
+              name: valheim
+              protocol: UDP
+            - containerPort: 2457
+              name: discovery
+              protocol: UDP
+          volumeMounts:
+            - mountPath: /config
+              name: valheim-data
+            - mountPath: /config/valheimplus/valheim_plus.cfg
+              name: valheim-config
+              subPath: valheim_plus.cfg
+            - mountPath: /config/backups
+              name: nfs
+      volumes:
+        - name: valheim-data
+          persistentVolumeClaim:
+            claimName: valheim-pvc
+        - name: valheim-config
+          configMap:
+            name: valheim
+        - name: nfs
+          nfs:
+            server: nas01.bubylou.com
+            path: /srv/k3s/valheim

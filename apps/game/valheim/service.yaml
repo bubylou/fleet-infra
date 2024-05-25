@@ -1,0 +1,21 @@
+# https://kubernetes.io/docs/concepts/services-networking/service/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: valheim
+spec:
+  selector:
+    app: valheim
+  type: NodePort
+  ports:
+    - port: 2456
+      targetPort: 2456
+      name: valheim
+      nodePort: 32456
+      protocol: UDP
+    - port: 2457
+      targetPort: 2457
+      name: discovery
+      nodePort: 32457
+      protocol: UDP
