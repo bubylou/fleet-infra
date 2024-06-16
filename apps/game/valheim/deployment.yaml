@@ -47,8 +47,6 @@ spec:
               value: ""
             - name: RESTART_CRON
               value: ""
-            - name: STATUS_HTTP
-              value: "true"
           ports:
             - containerPort: 2456
               name: valheim
@@ -59,24 +57,24 @@ spec:
             - containerPort: 80
               name: status
               protocol: TCP
-          readinessProbe:
-            httpGet:
-              path: /status.json
-              port: 80
-              scheme: HTTP
           volumeMounts:
             - mountPath: /config
               name: valheim-data
             - mountPath: /config/valheimplus/valheim_plus.cfg
-              name: valheim-config
+              name: valheim-plus-config
               subPath: valheim_plus.cfg
             - mountPath: /config/backups
               name: nfs
+            - mountPath: /opt/valheim
+              name: valheim-data
       volumes:
+        - name: valheim-config
+          persistentVolumeClaim:
+            claimName: valheim-config
         - name: valheim-data
           persistentVolumeClaim:
-            claimName: valheim-pvc
-        - name: valheim-config
+            claimName: valheim-data
+        - name: valheim-plus-config
           configMap:
             name: valheim
         - name: nfs
