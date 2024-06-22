@@ -12,6 +12,7 @@ data:
       discord:
         webhook-url: "${DISCORD_WEBHOOK}"
         default-alert:
+          enable: true
           description: "health check failed"
           send-on-resolved: true
           failure-threshold: 5
@@ -70,6 +71,15 @@ data:
         <<: *defaults
         group: external
         url: "http://random.website.svc:3000"
+      - name: valheim
+        group: external
+        url: "udp://valheim.game.svc:32456"
+        interval: 1m
+        conditions:
+          - "[CONNECTED] == true"
+          - "[RESPONSE_TIME] < 100"
+        alerts:
+          - type: discord
       - name: website
         <<: *defaults
         group: external
