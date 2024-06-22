@@ -43,10 +43,6 @@ spec:
                 secretKeyRef:
                   name: valheim
                   key: ADMINLIST_IDS
-            - name: UPDATE_CRON
-              value: ""
-            - name: RESTART_CRON
-              value: ""
           ports:
             - containerPort: 2456
               name: valheim
@@ -54,9 +50,6 @@ spec:
             - containerPort: 2457
               name: discovery
               protocol: UDP
-            - containerPort: 80
-              name: status
-              protocol: TCP
           volumeMounts:
             - mountPath: /config
               name: valheim-data

@@ -4,18 +4,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: valheim
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: 192.168.1.94
 spec:
   selector:
     app: valheim
-  type: NodePort
+  type: LoadBalancer
   ports:
     - port: 2456
       targetPort: 2456
       name: valheim
-      nodePort: 32456
-      protocol: UDP
-    - port: 2457
-      targetPort: 2457
-      name: discovery
-      nodePort: 32457
       protocol: UDP
