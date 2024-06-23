@@ -21,7 +21,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: lidarr
-          image: ghcr.io/hotio/lidarr:release-2.1.7.4030
+          image: ghcr.io/hotio/lidarr:release-2.3.3.4204
           imagePullPolicy: IfNotPresent
           env:
             - name: PGID
