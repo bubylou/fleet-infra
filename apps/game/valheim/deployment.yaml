@@ -25,6 +25,8 @@ spec:
           env:
             - name: TZ
               value: America/New_York
+            - name: SERVER_PUBLIC
+              value: "false"
             - name: SERVER_NAME
               value: "Bubylou"
             - name: SERVER_PASS
@@ -48,7 +50,10 @@ spec:
               name: valheim
               protocol: UDP
             - containerPort: 2457
-              name: discovery
+              name: query
+              protocol: UDP
+            - containerPort: 2458
+              name: rpc
               protocol: UDP
           volumeMounts:
             - mountPath: /config
