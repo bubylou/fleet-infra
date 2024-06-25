@@ -7,7 +7,7 @@ metadata:
   labels:
     app: valheim
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: valheim
@@ -55,6 +55,15 @@ spec:
             - containerPort: 2458
               name: rpc
               protocol: UDP
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - valheim-status --timeout-is-error
+            initialDelaySeconds: 180
+            failureThreshold: 5
+            periodSeconds: 30
           volumeMounts:
             - mountPath: /config
               name: valheim-data
