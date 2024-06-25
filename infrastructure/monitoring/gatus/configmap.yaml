@@ -32,7 +32,7 @@ data:
         - type: discord
 
     endpoints:
-      - name: External DNS
+      - name: domain
         group: external
         url: "1.1.1.1"
         interval: 15m
@@ -47,10 +47,6 @@ data:
         <<: *defaults
         group: external
         url: "http://mealie.home.svc:9000"
-      - name: calibre-web
-        <<: *defaults
-        group: external
-        url: "http://calibre-web.media.svc:8083"
       - name: jellyfin
         <<: *defaults
         group: external
@@ -71,21 +67,12 @@ data:
         <<: *defaults
         group: external
         url: "http://random.website.svc:3000"
-      - name: valheim
-        group: external
-        url: "udp://valheim.game.svc:32456"
-        interval: 1m
-        conditions:
-          - "[CONNECTED] == true"
-          - "[RESPONSE_TIME] < 100"
-        alerts:
-          - type: discord
       - name: website
         <<: *defaults
         group: external
         url: "http://nginx.website.svc:80"
 
-      - name: Internal DNS
+      - name: domain
         group: internal
         url: "192.168.1.91"
         interval: 15m
@@ -93,7 +80,6 @@ data:
           query-name: "bubylou.com"
           query-type: "A"
         conditions:
-          - "[BODY] == 192.168.1.90"
           - "[DNS_RCODE] == NOERROR"
         alerts:
           - type: discord
@@ -115,18 +101,12 @@ data:
       - name: sonarr
         <<: *defaults
         url: "http://sonarr.arr.svc:8989"
-      - name: calibre
-        <<: *defaults
-        url: "http://calibre.media.svc:8080"
       - name: qbittorrent
         <<: *defaults
         url: "http://qbittorrent.torrent.svc:8080"
       - name: authelia
         <<: *defaults
         url: "http://authelia.sso.svc:9091"
-      - name: grafana
-        <<: *defaults
-        url: "http://kube-prometheus-stack-grafana.monitoring.svc:80"
       - name: lldap
         <<: *defaults
         url: "http://lldap.sso.svc:17170"
