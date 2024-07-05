@@ -18,7 +18,6 @@ spec:
         app: qbittorrent
     spec:
       dnsPolicy: ClusterFirst
-      nodeName: nas01
       restartPolicy: Always
       initContainers:
         - name: sysctl

@@ -52,8 +52,12 @@ data:
         group: external
         url: "http://jellyfin.media.svc:8096"
       - name: jellyseerr
-        <<: *defaults
         group: external
+        interval: 5m
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+          - type: discord
         url: "http://jellyseerr.media.svc:5055"
       - name: navidrome
         <<: *defaults
