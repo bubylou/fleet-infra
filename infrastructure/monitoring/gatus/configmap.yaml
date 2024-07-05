@@ -24,10 +24,10 @@ data:
 
     default-endpoint: &defaults
       group: internal
-      interval: 15m
+      interval: 5m
       conditions:
         - "[STATUS] == 200"
-        - "[RESPONSE_TIME] < 300"
+        - "[RESPONSE_TIME] < 100"
       alerts:
         - type: discord
 
