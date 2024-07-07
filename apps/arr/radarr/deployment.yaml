@@ -21,7 +21,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: radarr
-          image: ghcr.io/hotio/radarr:release-5.3.6.8612
+          image: ghcr.io/hotio/radarr:release-5.7.0.8882
           imagePullPolicy: IfNotPresent
           env:
             - name: PGID
