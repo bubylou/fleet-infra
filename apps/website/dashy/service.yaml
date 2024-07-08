@@ -7,7 +7,7 @@ spec:
   selector:
     app: dashy
   ports:
-    - port: 4000
+    - port: 8080
       protocol: TCP
       targetPort: dashy
   sessionAffinity: None

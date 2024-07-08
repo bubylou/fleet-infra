@@ -17,7 +17,7 @@ spec:
               service:
                 name: dashy
                 port:
-                  number: 4000
+                  number: 8080
   tls:
     - hosts:
       - dashy.bubylou.com
