@@ -18,12 +18,17 @@ data:
           failure-threshold: 5
           success-threshold: 5
 
+    connectivity:
+      checker:
+        target: 1.1.1.1:53
+        interval: 5m
+
     storage:
       type: postgres
       path: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres.monitoring.svc:5432/${POSTGRES_DB}?sslmode=disable"
 
     default-endpoint: &defaults
-      group: internal
+      group: private
       interval: 5m
       conditions:
         - "[STATUS] == 200"
@@ -33,7 +38,7 @@ data:
 
     endpoints:
       - name: domain
-        group: external
+        group: public
         url: "1.1.1.1"
         interval: 15m
         dns:
@@ -45,14 +50,14 @@ data:
           - type: discord
       - name: mealie
         <<: *defaults
-        group: external
+        group: public
         url: "http://mealie.home.svc:9000"
       - name: jellyfin
         <<: *defaults
-        group: external
+        group: public
         url: "http://jellyfin.media.svc:8096"
       - name: jellyseerr
-        group: external
+        group: public
         interval: 5m
         conditions:
           - "[STATUS] == 200"
@@ -61,23 +66,23 @@ data:
         url: "http://jellyseerr.media.svc:5055"
       - name: navidrome
         <<: *defaults
-        group: external
+        group: public
         url: "http://navidrome.music.svc:4533"
       - name: dashy
         <<: *defaults
-        group: external
+        group: public
         url: "http://dashy.website.svc:4000"
       - name: random
         <<: *defaults
-        group: external
+        group: public
         url: "http://random.website.svc:3000"
       - name: website
         <<: *defaults
-        group: external
+        group: public
         url: "http://nginx.website.svc:80"
 
       - name: domain
-        group: internal
+        group: private
         url: "192.168.1.91"
         interval: 15m
         dns:

@@ -24,10 +24,6 @@ spec:
           image: ghcr.io/hotio/jellyfin:release-10.9.4
           imagePullPolicy: IfNotPresent
           env:
-            - name: PGID
-              value: '1000'
-            - name: PUID
-              value: '1000'
             - name: TZ
               value: America/New_York
             - name: JELLYFIN_PublishedServerUrl
