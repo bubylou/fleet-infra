@@ -21,7 +21,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: jellyfin
-          image: ghcr.io/hotio/jellyfin:release-10.9.4
+          image: ghcr.io/hotio/jellyfin:release-10.9.8
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
