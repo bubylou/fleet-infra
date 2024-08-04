@@ -27,18 +27,23 @@ data:
       type: postgres
       path: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres.monitoring.svc:5432/${POSTGRES_DB}?sslmode=disable"
 
-    default-endpoint: &defaults
-      group: private
+    default-endpoint-http: &default-http
+      group: internal
       interval: 5m
       conditions:
         - "[STATUS] == 200"
         - "[RESPONSE_TIME] < 100"
-      alerts:
-        - type: discord
+
+    default-endpoint-tcp: &default-tcp
+        group: nodes
+        interval: 1m
+        conditions:
+          - "[CONNECTED] == true"
 
     endpoints:
+    # external
       - name: domain
-        group: public
+        group: external
         url: "1.1.1.1"
         interval: 15m
         dns:
@@ -46,43 +51,36 @@ data:
           query-type: "A"
         conditions:
           - "[DNS_RCODE] == NOERROR"
-        alerts:
-          - type: discord
       - name: mealie
-        <<: *defaults
-        group: public
+        <<: *default-http
+        group: external
         url: "http://mealie.home.svc:9000"
       - name: jellyfin
-        <<: *defaults
-        group: public
+        <<: *default-http
+        group: external
         url: "http://jellyfin.media.svc:8096"
       - name: jellyseerr
-        group: public
+        group: external
         interval: 5m
         conditions:
           - "[STATUS] == 200"
-        alerts:
-          - type: discord
         url: "http://jellyseerr.media.svc:5055"
       - name: navidrome
-        <<: *defaults
-        group: public
+        <<: *default-http
+        group: external
         url: "http://navidrome.music.svc:4533"
-      - name: dashy
-        <<: *defaults
-        group: public
-        url: "http://dashy.website.svc:4000"
       - name: random
-        <<: *defaults
-        group: public
+        <<: *default-http
+        group: external
         url: "http://random.website.svc:3000"
       - name: website
-        <<: *defaults
-        group: public
+        <<: *default-http
+        group: external
         url: "http://nginx.website.svc:80"
 
+    # internal
       - name: domain
-        group: private
+        group: internal
         url: "192.168.1.91"
         interval: 15m
         dns:
@@ -90,35 +88,53 @@ data:
           query-type: "A"
         conditions:
           - "[DNS_RCODE] == NOERROR"
-        alerts:
-          - type: discord
       - name: bazarr
-        <<: *defaults
+        <<: *default-http
         url: "http://bazarr.arr.svc:6767"
       - name: lidarr
-        <<: *defaults
+        <<: *default-http
         url: "http://lidarr.arr.svc:8686"
       - name: prowlarr
-        <<: *defaults
+        <<: *default-http
         url: "http://prowlarr.arr.svc:9696"
       - name: radarr
-        <<: *defaults
+        <<: *default-http
         url: "http://radarr.arr.svc:7878"
       - name: readarr
-        <<: *defaults
+        <<: *default-http
         url: "http://readarr.arr.svc:8787"
       - name: sonarr
-        <<: *defaults
+        <<: *default-http
         url: "http://sonarr.arr.svc:8989"
       - name: qbittorrent
-        <<: *defaults
+        <<: *default-http
         url: "http://qbittorrent.torrent.svc:8080"
       - name: authelia
-        <<: *defaults
+        <<: *default-http
         url: "http://authelia.sso.svc:9091"
       - name: lldap
-        <<: *defaults
+        <<: *default-http
         url: "http://lldap.sso.svc:17170"
       - name: longhorn
-        <<: *defaults
+        <<: *default-http
         url: "http://longhorn-frontend.longhorn-system.svc:80"
+
+    # nodes 
+      - name: nas01
+        <<: *default-tcp
+        url: "icmp://nas01.bubylou.com"
+      - name: orangepi01
+        <<: *default-tcp
+        url: "icmp://orangepi01.bubylou.com"
+      - name: orangepi02
+        <<: *default-tcp
+        url: "icmp://orangepi02.bubylou.com"
+      - name: orangepi03
+        <<: *default-tcp
+        url: "icmp://orangepi03.bubylou.com"
+      - name: orangepi04
+        <<: *default-tcp
+        url: "icmp://orangepi04.bubylou.com"
+      - name: orangepi05
+        <<: *default-tcp
+        url: "icmp://orangepi05.bubylou.com"
