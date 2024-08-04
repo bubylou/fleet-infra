@@ -23,6 +23,12 @@ data:
         target: 1.1.1.1:53
         interval: 5m
 
+    maintenance:
+      start: 03:00
+      duration: 4h
+      timezone: "America/New_York"
+      every: [Wednesday]
+
     storage:
       type: postgres
       path: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres.monitoring.svc:5432/${POSTGRES_DB}?sslmode=disable"

@@ -3,18 +3,27 @@
   "extends": [
     "config:recommended"
   ],
+
+  "timezone": "America/New_York",
+  "automergeSchedule": [
+    "after 3am every wednesday",
+    "before 7am every wednesday"
+  ],
+
   "kubernetes": {
     "fileMatch": [
       "apps/.+/deployment\\.ya?ml$",
       "infrastructure/.+/deployment\\.ya?ml$"
     ]
   },
+
   "helm-values": {
     "fileMatch": [
       "apps/.+/release\\.ya?ml$",
       "infrastructure/.+/deployment\\.ya?ml$"
     ]
   },
+
   "packageRules": [
     {
       "matchPackagePatterns": [
