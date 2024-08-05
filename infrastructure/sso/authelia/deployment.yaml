@@ -41,7 +41,7 @@ spec:
             successThreshold: 1
             failureThreshold: 5
           env:
-            - name: AUTHELIA_JWT_SECRET_FILE
+            - name: AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE
               value: /app/secrets/JWT_SECRET
             - name: AUTHELIA_SESSION_SECRET_FILE
               value: /app/secrets/SESSION_SECRET
