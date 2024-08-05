@@ -17,38 +17,31 @@ spec:
     spec:
       containers:
         - name: dashy
-          image: lissy93/dashy:2.1.1
+          image: ghcr.io/lissy93/dashy:3.1.0
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_ENV
               value: production
           ports:
             - name: dashy
-              containerPort: 80
+              containerPort: 8080
               protocol: TCP
           livenessProbe:
             exec:
               command:
                 - node
                 - /app/services/healthcheck
-            initialDelaySeconds: 40
+            initialDelaySeconds: 240
             periodSeconds: 90
             timeoutSeconds: 10
           readinessProbe:
             httpGet:
               path: /
-              port: 80
+              port: 8080
               scheme: HTTP
-          resources:
-            requests:
-              cpu: 100m
-              memory: 100Mi
-            limits:
-              cpu: 200m
-              memory: 200Mi
           volumeMounts:
             - name: config
-              mountPath: /app/public
+              mountPath: /app/user-data
       volumes:
         - name: config
           configMap:

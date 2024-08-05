@@ -53,9 +53,6 @@ spec:
             - containerPort: 8080
               name: qbittorrent
           volumeMounts:
-            - mountPath: /config/config/qBittorrent.conf
-              name: qbittorrent-config
-              subPath: qBittorrent.conf
             - mountPath: /config
               name: qbittorrent-data
             - mountPath: /config/wireguard
@@ -63,10 +60,6 @@ spec:
             - mountPath: /data/downloads
               name: nfs-share
       volumes:
-        - name: qbittorrent-config
-          configMap:
-            name: qbittorrent-config
-            defaultMode: 0777
         - name: qbittorrent-data
           persistentVolumeClaim:
             claimName: qbittorrent-pvc

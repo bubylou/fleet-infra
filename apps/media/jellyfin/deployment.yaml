@@ -21,13 +21,9 @@ spec:
       restartPolicy: Always
       containers:
         - name: jellyfin
-          image: ghcr.io/hotio/jellyfin:release-10.8.13-1
+          image: ghcr.io/hotio/jellyfin:release-10.9.8
           imagePullPolicy: IfNotPresent
           env:
-            - name: PGID
-              value: '1000'
-            - name: PUID
-              value: '1000'
             - name: TZ
               value: America/New_York
             - name: JELLYFIN_PublishedServerUrl

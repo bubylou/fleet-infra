@@ -1,0 +1,25 @@
+# https://kubernetes.io/docs/concepts/services-networking/service/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: valheim
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: 192.168.1.94
+spec:
+  selector:
+    app: valheim
+  type: LoadBalancer
+  ports:
+    - port: 2456
+      targetPort: 2456
+      name: valheim
+      protocol: UDP
+    - port: 2457
+      targetPort: 2457
+      name: query
+      protocol: UDP
+    - port: 2458
+      targetPort: 2458
+      name: rpc
+      protocol: UDP

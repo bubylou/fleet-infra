@@ -1,0 +1,146 @@
+# https://kubernetes.io/docs/concepts/configuration/configmap/
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gatus-config
+data:
+  config.yaml: |
+    metrics: false
+
+    alerting:
+      discord:
+        webhook-url: "${DISCORD_WEBHOOK}"
+        default-alert:
+          enable: true
+          description: "health check failed"
+          send-on-resolved: true
+          failure-threshold: 5
+          success-threshold: 5
+
+    connectivity:
+      checker:
+        target: 1.1.1.1:53
+        interval: 5m
+
+    maintenance:
+      start: 03:00
+      duration: 4h
+      timezone: "America/New_York"
+      every: [Wednesday]
+
+    storage:
+      type: postgres
+      path: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres.monitoring.svc:5432/${POSTGRES_DB}?sslmode=disable"
+
+    default-endpoint-http: &default-http
+      group: internal
+      interval: 5m
+      conditions:
+        - "[STATUS] == 200"
+        - "[RESPONSE_TIME] < 100"
+
+    default-endpoint-tcp: &default-tcp
+        group: nodes
+        interval: 1m
+        conditions:
+          - "[CONNECTED] == true"
+
+    endpoints:
+    # external
+      - name: domain
+        group: external
+        url: "1.1.1.1"
+        interval: 15m
+        dns:
+          query-name: "bubylou.com"
+          query-type: "A"
+        conditions:
+          - "[DNS_RCODE] == NOERROR"
+      - name: mealie
+        <<: *default-http
+        group: external
+        url: "http://mealie.home.svc:9000"
+      - name: jellyfin
+        <<: *default-http
+        group: external
+        url: "http://jellyfin.media.svc:8096"
+      - name: jellyseerr
+        group: external
+        interval: 5m
+        conditions:
+          - "[STATUS] == 200"
+        url: "http://jellyseerr.media.svc:5055"
+      - name: navidrome
+        <<: *default-http
+        group: external
+        url: "http://navidrome.music.svc:4533"
+      - name: random
+        <<: *default-http
+        group: external
+        url: "http://random.website.svc:3000"
+      - name: website
+        <<: *default-http
+        group: external
+        url: "http://nginx.website.svc:80"
+
+    # internal
+      - name: domain
+        group: internal
+        url: "192.168.1.91"
+        interval: 15m
+        dns:
+          query-name: "bubylou.com"
+          query-type: "A"
+        conditions:
+          - "[DNS_RCODE] == NOERROR"
+      - name: bazarr
+        <<: *default-http
+        url: "http://bazarr.arr.svc:6767"
+      - name: lidarr
+        <<: *default-http
+        url: "http://lidarr.arr.svc:8686"
+      - name: prowlarr
+        <<: *default-http
+        url: "http://prowlarr.arr.svc:9696"
+      - name: radarr
+        <<: *default-http
+        url: "http://radarr.arr.svc:7878"
+      - name: readarr
+        <<: *default-http
+        url: "http://readarr.arr.svc:8787"
+      - name: sonarr
+        <<: *default-http
+        url: "http://sonarr.arr.svc:8989"
+      - name: qbittorrent
+        <<: *default-http
+        url: "http://qbittorrent.torrent.svc:8080"
+      - name: authelia
+        <<: *default-http
+        url: "http://authelia.sso.svc:9091"
+      - name: lldap
+        <<: *default-http
+        url: "http://lldap.sso.svc:17170"
+      - name: longhorn
+        <<: *default-http
+        url: "http://longhorn-frontend.longhorn-system.svc:80"
+
+    # nodes 
+      - name: nas01
+        <<: *default-tcp
+        url: "icmp://nas01.bubylou.com"
+      - name: orangepi01
+        <<: *default-tcp
+        url: "icmp://orangepi01.bubylou.com"
+      - name: orangepi02
+        <<: *default-tcp
+        url: "icmp://orangepi02.bubylou.com"
+      - name: orangepi03
+        <<: *default-tcp
+        url: "icmp://orangepi03.bubylou.com"
+      - name: orangepi04
+        <<: *default-tcp
+        url: "icmp://orangepi04.bubylou.com"
+      - name: orangepi05
+        <<: *default-tcp
+        url: "icmp://orangepi05.bubylou.com"

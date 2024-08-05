@@ -91,20 +91,12 @@ access_control:
     # bypass
     - domain: 'bubylou.com'
       policy: bypass
-    - domain_regex: '(blog|jellyfin|random)\.bubylou\.com$'
+    - domain_regex: '(blog|jellyfin|random|status)\.bubylou\.com$'
       policy: bypass
     - domain_regex: '(gonic|navidrome)\.bubylou\.com$'
       policy: bypass
       resources:
         - '^/rest/.*$'
-    - domain: 'kuma.bubylou.com'
-      policy: bypass
-      resources:
-        - '^/api/status-page/.*$'
-        - '^/assets/index.*$'
-        - '^/icon.svg$'
-        - '^/status$'
-        - '^/status/$'
     - domain_regex: '(bazarr|lidarr|prowlarr|radarr|readarr|sonarr)\.bubylou\.com$'
       policy: bypass
       resources:
@@ -137,7 +129,7 @@ access_control:
         - internal
       subject:
         - 'group:arr_admin'
-    - domain_regex: '(grafana|kuma|longhorn)\.bubylou\.com$'
+    - domain_regex: '(grafana|longhorn)\.bubylou\.com$'
       policy: two_factor
       networks:
         - internal

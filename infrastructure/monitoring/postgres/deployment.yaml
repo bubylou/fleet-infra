@@ -25,14 +25,14 @@ spec:
           resources:
           env:
             - name: POSTGRES_DB
-              value: authelia
+              value: gatus
             - name: POSTGRES_USER
-              value: authelia
+              value: gatus
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: authelia
-                  key: STORAGE_PASSWORD
+                  name: gatus
+                  key: POSTGRES_PASSWORD
                   optional: false
             - name: PGDATA
               value: /var/lib/postgresql/data/db

@@ -21,7 +21,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: jellyseerr
-          image: ghcr.io/hotio/jellyseerr:release-1.7.0
+          image: ghcr.io/hotio/jellyseerr:release-1.9.2
           imagePullPolicy: IfNotPresent
           env:
             - name: PGID
