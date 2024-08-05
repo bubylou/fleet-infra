@@ -1,7 +1,7 @@
 on:
   pull_request:
     paths:
-      - '**/authelia/configuration.yml'
+      - 'infractuture/sso/authelia/configuration.yml'
 
 jobs:
   authelia-action:
@@ -14,7 +14,6 @@ jobs:
       - name: Authelia action
         id: authelia
         uses: bubylou/authelia-validate@v3
-        version: 4.38.10
         env:
           AUTHELIA_JWT_SECRET: test
           AUTHELIA_SESSION_SECRET: test
@@ -25,3 +24,4 @@ jobs:
           AUTHELIA_NOTIFIER_SMTP_PASSWORD: test
         with:
           file-path: ./infrastructure/sso/authelia/configuration.yml
+          version: 4.38.10
