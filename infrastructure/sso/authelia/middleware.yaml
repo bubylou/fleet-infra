@@ -8,9 +8,10 @@ metadata:
     app.kubernetes.io/name: authelia
 spec:
   forwardAuth:
-    address: http://authelia.sso.svc:9091/api/verify?rd=https://auth.bubylou.com
+    address: http://authelia.sso.svc:9091/api/authz/forward-auth
     authResponseHeaders:
       - Remote-User
       - Remote-Name
       - Remote-Email
       - Remote-Groups
+    trustForwardHeader: true

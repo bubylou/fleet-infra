@@ -15,7 +15,7 @@ jobs:
         id: authelia
         uses: bubylou/authelia-validate@v3
         env:
-          AUTHELIA_JWT_SECRET: test
+          AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET: test
           AUTHELIA_SESSION_SECRET: test
           AUTHELIA_SESSION_REDIS_PASSWORD: test
           AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD: test
@@ -24,3 +24,4 @@ jobs:
           AUTHELIA_NOTIFIER_SMTP_PASSWORD: test
         with:
           file-path: ./infrastructure/sso/authelia/configuration.yml
+          version: v4.38.10
