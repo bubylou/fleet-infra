@@ -1,5 +1,6 @@
 theme: dark
 default_2fa_method: webauthn
+disable_healhcheck: false
 
 server:
   address: 'tcp://:9091/'
@@ -17,7 +18,7 @@ telemetry:
 
 totp:
   disable: false
-  issuer: authelia.com
+  issuer: bubylou.com
   algorithm: sha256
   digits: 8
   period: 60
@@ -33,6 +34,14 @@ webauthn:
 
 duo_api:
   disable: true
+
+identity_validation:
+  elevated_session:
+    code_lifespan: '5 minutes'
+    elevation_lifespan: '10 minutes'
+    characters: 8
+    require_second_factor: false
+    skip_second_factor: false
 
 ntp:
   address: "time.cloudflare.com:123"
