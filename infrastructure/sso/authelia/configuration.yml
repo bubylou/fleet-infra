@@ -1,19 +1,19 @@
 theme: dark
-default_redirection_url: https://bubylou.com/
 default_2fa_method: webauthn
 
 server:
-  host: 0.0.0.0
-  port: 9091
-  path: ""
-
-  enable_pprof: false
-  enable_expvars: false
+  address: 'tcp://:9091/'
+  asset_path: '/config/assets/'
   disable_healthcheck: false
 
 log:
   level: info
   keep_stdout: false
+
+telemetry:
+  metrics:
+    enabled: false
+    address: 'tcp://:9959/metrics'
 
 totp:
   disable: false
@@ -40,27 +40,30 @@ ntp:
   max_desync: 3s
   disable_startup_check: false
   disable_failure: false
+
 authentication_backend:
   password_reset:
     disable: false
   refresh_interval: 1m
 
   ldap:
+    address: ldap://lldap.sso.svc:3890
     implementation: custom
-    url: ldap://lldap.sso.svc:3890
     timeout: 5s
     start_tls: false
     base_dn: dc=bubylou,dc=com
-    username_attribute: uid
     additional_users_dn: ou=people
     users_filter: "(&(|({username_attribute}={input})({mail_attribute}={input}))(objectClass=person))"
     additional_groups_dn: ou=groups
     groups_filter: "(member={dn})"
-    group_name_attribute: cn
-    mail_attribute: mail
-    display_name_attribute: displayName
+    group_search_mode: 'filter'
     permit_referrals: false
     user: uid=admin,ou=people,dc=bubylou,dc=com
+    attributes:
+      username: uid
+      display_name: displayName
+      mail: mail
+      group_name: cn
 
 password_policy:
   standard:
@@ -69,6 +72,11 @@ password_policy:
   zxcvbn:
     enabled: true
     min_score: 3
+
+privacy_policy:
+  enabled: false
+  require_user_acceptance: false
+  policy_url: ''
 
 access_control:
   default_policy: deny
@@ -128,12 +136,20 @@ access_control:
         - 'group:k3s_admin'
 
 session:
+  cookies:
+    - name: authelia_session
+      domain: bubylou.com
+      authelia_url: 'https://auth.bubylou.com'
+      default_redirection_url: https://bubylou.com/
+      same_site: lax
+      inactivity: 5m
+      expiration: 1h
+      remember_me: 1M
   name: authelia_session
-  domain: bubylou.com
   same_site: lax
-  expiration: 1h
   inactivity: 5m
-  remember_me_duration: 1M
+  expiration: 1h
+  remember_me: 1M
 
   redis:
     host: redis-0.redis.sso.svc
@@ -149,8 +165,7 @@ regulation:
 
 storage:
   postgres:
-    host: postgres.sso.svc
-    port: 5432
+    address: 'tcp://postgres.sso.svc:5432'
     database: authelia
     schema: public
     username: authelia
@@ -159,13 +174,17 @@ storage:
 notifier:
   disable_startup_check: false
   smtp:
-    host: smtp-relay.brevo.com
-    port: 587
+    address: 'smtp://smtp-relay.brevo.com:587'
     timeout: 5s
     username: bubylou@bubylou.com
     sender: "No Reply <no-reply@bubylou.com>"
     identifier: localhost
     subject: "[Authelia] {title}"
     startup_check_address: test@authelia.com
-    disable_require_tls: true
+    disable_require_tls: false
     disable_html_emails: false
+    tls:
+      server_name: 'smtp-relay.brevo.com'
+      skip_verify: false
+      minimum_version: 'TLS1.2'
+      maximum_version: 'TLS1.3'
