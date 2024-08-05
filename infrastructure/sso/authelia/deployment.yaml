@@ -1,17 +1,12 @@
 # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: authelia
   labels:
     app: authelia
 spec:
-  replicas: 3
-  strategy:
-   type: RollingUpdate
-   rollingUpdate:
-     maxUnavailable: 1
   selector:
     matchLabels:
       app: authelia
@@ -24,7 +19,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: authelia
-          image: authelia/authelia:4.37.5
+          image: ghcr.io/authelia/authelia:4.38.10
           imagePullPolicy: IfNotPresent
           livenessProbe:
             exec:
