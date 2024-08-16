@@ -17,6 +17,7 @@ spec:
       labels:
         app: jellyfin
     spec:
+      nodeName: nas01
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       containers:
