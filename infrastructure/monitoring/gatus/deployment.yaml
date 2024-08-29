@@ -22,7 +22,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: gatus
-          image: twinproduction/gatus:v5.11.0
+          image: twinproduction/gatus:v5.12.1
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
